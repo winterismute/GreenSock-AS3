@@ -1633,13 +1633,29 @@ TweenMax.killAll(false, false, true, false);
 				tween:Animation, i:int;
 			for (i = 0; i < l; i++) {
 				tween = a[i];
-				if (allTrue || (tween is SimpleTimeline) || ((isDC = (TweenLite(tween).target == TweenLite(tween).vars.onComplete)) && delayedCalls) || (tweens && !isDC)) {
-					if (complete) {
-						tween.totalTime(tween._reversed ? 0 : tween.totalDuration());     
-					} else {
-						tween._enabled(false, false);
+				if (allTrue || (tween is SimpleTimeline)) {
+					killTweenHelper(tween, complete);
+				} else {
+					isDC = TweenLite(tween).target == TweenLite(tween).vars.onComplete;
+					if ((isDC && delayedCalls) || (tweens && !isDC)) {
+						killTweenHelper(tween, complete);
 					}
 				}
+			}
+		}
+		
+		/**
+		 * Helper used by killAll
+		 * 
+		 * @param	tween
+		 * @param	complete
+		 */
+		[Inline]
+		private static function killTweenHelper(tween:Animation, complete:Boolean) : void {
+			if (complete) {
+				tween.totalTime(tween._reversed ? 0 : tween.totalDuration());
+			} else {
+				tween._enabled(false, false);
 			}
 		}
 		
